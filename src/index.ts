@@ -1,19 +1,14 @@
 import { WebSocket, WebSocketServer } from "ws";
 import { PersonService } from "./services/peson.service";
 import { Person } from "./entities/persons.entity";
-import { AppDataSource } from "./config/datasource";
+import { AppDataSource, startDatabase } from "./config/datasource";
 
 const wss = new WebSocketServer({ port: 3000 });
 
 const personService = new PersonService();
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log("Si se levanto");
-  })
-  .catch((e) => {
-    console.log(e);
-  });
+startDatabase()
+  
 
 wss.on("connection", async (ws: WebSocket) => {
   console.log("Cliente conectado");
