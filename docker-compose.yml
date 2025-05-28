@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  postgres_db:
+    image: postgres:17.2
+    restart: always
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: db_postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  node_server:
+    container_name: node_server
+    hostname: node_server
+    image: paulsebastian97/myappnode
+    depends_on:
+      - postgres_db
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_HOST: postgres_db
+      DATABASE_PORT: 5432
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: db_postgres
+    command: npm start
+    networks:
+      - app-network
+
+  frontend:
+    image: paulsebastian97/appperson
+    depends_on:
+      - node_server
+    ports:
+      - "4200:80"
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+
+networks:
+  app-network:
+    driver: bridge
